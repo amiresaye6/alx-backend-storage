@@ -9,3 +9,61 @@ create a push_all.sh file
 move it to /usr/local/bin/
 change its mode to X
 run it like so "push_all.sh 'the commit massage'"
+
+
+HOW TO CREATE A PROCEDURE
+
+DELIMITER $$
+
+CREATE PROCEDURE select_all()
+BEGIN
+    SELECT * FROM table;
+END
+
+DELIMITER ;
+
+
+TO CALL THE PROCEDURE
+CALL select_all();
+
+TO DROP PROCEDURE
+DROP PROCEDURE select_all;
+
+
+CREATE A PROCEDURE WITH PARAMTERS
+
+
+DELIMITER $$
+
+CREATE PORCEDURE hi_ther(IN name VARCHAR(255))
+BEGIN
+    SELECT * FROM customers
+    WHERE customers.name = hi_ther.name;
+END
+
+DELIMITER ;
+
+ or 
+
+DELIMITER $$
+
+CREATE PORCEDURE hi_ther(IN p_name VARCHAR(255))
+BEGIN
+    SELECT * FROM customers
+    WHERE name = p_name;
+END
+
+DELIMITER ;
+
+
+for multible PARAMTERS
+
+DELIMITER $$
+
+CREATE PROCEDURE multi(IN firs_name VARCHAR(50), IN last_name VARCHAR(50))
+BEGIN
+    SELECT * FROM customers
+    WHERE f_name = firs_name AND l_name = last_name;
+END
+
+DELIMITER ;
