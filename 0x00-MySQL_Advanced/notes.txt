@@ -1,0 +1,6 @@
+if you have a database in a .zip field
+type this command
+
+>> unzip fileName.zip
+then 
+>> mysql myNewDataBaseName < dataBaseFile.sql
