@@ -4,3 +4,8 @@ type this command
 >> unzip fileName.zip
 then 
 >> mysql myNewDataBaseName < dataBaseFile.sql
+
+create a push_all.sh file
+move it to /usr/local/bin/
+change its mode to X
+run it like so "push_all.sh 'the commit massage'"
