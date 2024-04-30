@@ -1,0 +1,99 @@
+tutorial link: https://realpython.com/introduction-to-mongodb-and-python/
+others from the task page:
+
+to show the current database
+>> db
+to create or user a new dababase
+
+>> use new_database
+
+to list all databases existing
+
+>> show databases
+or 
+>> show dbs
+
+how to insert a new collection ie. [table]
+by using the .dot operator
+
+>> my_db_name.new_collection
+
+```
+It’s important to note that MongoDB creates databases and collections
+lazily. In other words, they’re physically created only after you insert the first document.
+```
+
+Documents are the unit of storage in MongoDB ie. table row in the RDBMS (Relational DataBase Model System)
+
+
+to inset a document
+
+>> db.tutorial.insertOne({
+...     "title": "Reading and Writing CSV Files in Python",
+...     "author": "Jon",
+...     "contributors": [
+...         "Aldren",
+...         "Geir Arne",
+...         "Joanna",
+...         "Jason"
+...     ],
+...     "url": "https://realpython.com/python-csv/"
+... })
+
+>> db.my_db_name.insert({"name": "amir alsayed"})
+
+to insert multible documents at once
+
+>> tutorial1 = {
+...     "title": "How to Iterate Through a Dictionary in Python",
+...     "author": "Leodanis",
+...     "contributors": [
+...         "Aldren",
+...         "Jim",
+...         "Joanna"
+...     ],
+...     "url": "https://realpython.com/iterate-through-dictionary-python/"
+... }
+
+>> tutorial2 = {
+...      "title": "Python 3's f-Strings: An Improved String Formatting Syntax",
+...      "author": "Joanna",
+...      "contributors": [
+...          "Adriana",
+...          "David",
+...          "Dan",
+...          "Jim",
+...          "Pavel"
+...      ],
+...      "url": "https://realpython.com/python-f-strings/"
+... }
+
+>> db.tutorial.insertMany([tutorial1, tutorial2])
+{
+    "acknowledged" : true,
+    "insertedIds" : [
+        ObjectId("60074ff05e6ea8d224f754bb"),
+        ObjectId("60074ff05e6ea8d224f754bc")
+    ]
+}
+
+>> db.my_db_name.insert([{"name": "ahmed alsayed"}, {"age": 22}])
+>>dp.my_db_name.insert(
+    [
+        {
+            "name": {
+                    "first_name": "amir", "last_name": "alsayed"
+                },
+                {
+                    "first_name": "amir", "last_name": "alsayed"
+                }
+        }
+    ]
+)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+==========================================================================================================
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+
