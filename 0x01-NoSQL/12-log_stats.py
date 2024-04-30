@@ -21,22 +21,28 @@ path=/status
 from pymongo import MongoClient
 
 
-def log_nginx_stats(mongo_collection):
+def helper(mongo_collection):
     """
-    provides some stats about Nginx logs
+    helper function to do the required
     """
-    print(f"{mongo_collection.estimated_document_count()} logs")
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
-    print("Methods:")
-    for method in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
+    print(f"{mongo_collection.estimated_document_count()} logs \nMethods:")
+
+    for method in methods:
         count = mongo_collection.count_documents({"method": method})
         print(f"\tmethod {method}: {count}")
 
-    number_of_gets = mongo_collection.count_documents(
-        {"method": "GET", "path": "/status"})
-    print(f"{number_of_gets} status check")
+    n_logs = MongoClient.count_documents({
+        "method": "GET", "path": "/status"
+    })
+    print(f"{n_logs} status check")
 
 
 if __name__ == "__main__":
-    mongo_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
-    log_nginx_stats(mongo_collection)
+    client = MongoClient()
+
+    db = client.logs
+    collection = db.nginx
+
+    helper(collection)
