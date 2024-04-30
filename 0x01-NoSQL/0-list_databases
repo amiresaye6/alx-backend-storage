@@ -1,2 +1,3 @@
 // list all existing databases on mongodp
-show databases
+// show databases
+show dbs
