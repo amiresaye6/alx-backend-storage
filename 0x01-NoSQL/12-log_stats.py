@@ -22,11 +22,14 @@ from pymongo import MongoClient
 
 
 def log_nginx_stats(mongo_collection):
-    """provides some stats about Nginx logs"""
+    """
+    helper function
+    """
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     print(f"{mongo_collection.estimated_document_count()} logs")
 
     print("Methods:")
-    for method in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
+    for method in methods:
         count = mongo_collection.count_documents({"method": method})
         print(f"\tmethod {method}: {count}")
 
@@ -36,5 +39,5 @@ def log_nginx_stats(mongo_collection):
 
 
 if __name__ == "__main__":
-    mongo_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
+    mongo_collection = MongoClient().logs.nginx
     log_nginx_stats(mongo_collection)
