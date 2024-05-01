@@ -20,7 +20,7 @@ from typing import Union
 from uuid import uuid4
 
 
-class Cache():
+class Cache:
     """
     cashing class using redis
     """
