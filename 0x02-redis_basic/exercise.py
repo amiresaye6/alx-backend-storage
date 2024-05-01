@@ -16,7 +16,7 @@ a str, bytes, int or float.
 """
 import redis
 from redis import Redis
-from typing import Union
+from typing import Union, Callable, Optional
 from uuid import uuid4
 
 
@@ -47,3 +47,28 @@ class Cache:
         self._redis.set(id, data)
 
         return id
+    
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
+        """getter function for class Cash"""
+        result = self._redis.get(key)
+
+        if fn:
+            return fn(result)
+        return result
+
+    def get_str(self, key: str) -> str:
+        """docs to be added"""
+        val = self._redis.get(key)
+
+        return val.decode("utf-8")
+
+    def get_int(self, key: str) -> int:
+        """DOCS TO BE ADDED"""
+        int_val = self._redis.get(key)
+        try:
+            int_val = int(int_val.decode("utf-8"))
+            return int_val
+        except Exception:
+            int_val = 0
+        return int_val
