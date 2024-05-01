@@ -17,7 +17,6 @@ a str, bytes, int or float.
 import redis
 from redis import Redis
 from typing import Union
-from typing import Any
 from uuid import uuid4
 
 
@@ -33,7 +32,7 @@ class Cache():
         self._redis: Redis = redis.Redis()
         self._redis.flushall()
 
-    def store(self, data: Any) -> str:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis and return the generated key.
 
