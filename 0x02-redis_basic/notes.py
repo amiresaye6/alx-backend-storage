@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """
+docs https://realpython.com/python-redis/
+"""
+"""
 this module contain all the notes related to my stydy of redis.
 Redis >> stands for Remote Dictionary Service.
 """
@@ -221,3 +224,95 @@ r.ping()
 import redis
 r = redis.from_url('redis://foo.bar.com:12345')
 r.ping()
+
+# redis pipeline
+
+import random
+
+random.seed(444)
+hats = {f"hat:{random.getrandbits(32)}": i for i in (
+    {
+        "color": "black",
+        "price": 49.99,
+        "style": "fitted",
+        "quantity": 1000,
+        "npurchased": 0,
+    },
+    {
+        "color": "maroon",
+        "price": 59.99,
+        "style": "hipster",
+        "quantity": 500,
+        "npurchased": 0,
+    },
+    {
+        "color": "green",
+        "price": 99.99,
+        "style": "baseball",
+        "quantity": 200,
+        "npurchased": 0,
+    })
+}
+# the pipeline reduces the db access times, it buffers the operations and 
+# does it at one trip to the server
+with r.pipeline() as pipe:
+    for h_id, hat in hats.items():
+        pipe.hmset(h_id, hat)
+    pipe.execute() # once written, the pipline executes its operations
+
+
+import logging
+import redis
+
+logging.basicConfig()
+
+class OutOfStockError(Exception):
+    """Raised when PyHats.com is all out of today's hottest hat"""
+
+def buyitem(r: redis.Redis, itemid: int) -> None:
+    with r.pipeline() as pipe:
+        error_count = 0
+        while True:
+            try:
+                # Get available inventory, watching for changes
+                # related to this itemid before the transaction
+                pipe.watch(itemid)
+                nleft: bytes = r.hget(itemid, "quantity")
+                if nleft > b"0":
+                    pipe.multi()
+                    pipe.hincrby(itemid, "quantity", -1)
+                    pipe.hincrby(itemid, "npurchased", 1)
+                    pipe.execute()
+                    break
+                else:
+                    # Stop watching the itemid and raise to break out
+                    pipe.unwatch()
+                    raise OutOfStockError(
+                        f"Sorry, {itemid} is out of stock!"
+                    )
+            except redis.WatchError:
+                # Log total num. of errors by this user to buy this item,
+                # then try the same process again of WATCH/HGET/MULTI/EXEC
+                error_count += 1
+                logging.warning(
+                    "WatchError #%d: %s; retrying",
+                    error_count, itemid
+                )
+    return None
+
+
+# decorators in py
+
+def fun1(fun):
+    def wrapper(*args, **kwargs):
+        print("startd")
+        fun()
+        print("ended")
+    return wrapper
+
+
+@fun1 # decorator to run function fun1 each time we call the next functio "f"
+def f(a):
+    print("a")
+
+f("hi")

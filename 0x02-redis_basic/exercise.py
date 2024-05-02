@@ -15,9 +15,20 @@ Type-annotate store correctly. Remember that data can be
 a str, bytes, int or float.
 """
 import redis
-from redis import Redis
 from typing import Union, Callable, Optional
+from functools import wraps
 from uuid import uuid4
+
+
+def count_calls(method: callable) -> callable:
+    """to be done"""
+    key = method.__qualname__
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """ to be added """
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -32,6 +43,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis and return the generated key.
@@ -47,7 +59,7 @@ class Cache:
         self._redis.set(id, data)
 
         return id
-    
+
     def get(self, key: str,
             fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
         """getter function for class Cash"""
