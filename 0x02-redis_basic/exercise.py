@@ -48,49 +48,49 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
-def replay(func: Callable):
-    """to be added"""
+# def replay(func: Callable):
+#     """to be added"""
 
-    r = redis.Redis()
-    key = func.__qualname__
+#     r = redis.Redis()
+#     key = func.__qualname__
 
-    times_called = r.get(key)
+#     times_called = r.get(key)
 
-    try:
-        times_called = int(times_called.decode("utf-8"))
-    except Exception:
-        times_called = 0
-    # may have failed some text cases
-    # print(f"{key} was called {times_called} times:")
-    print("{} was called {} times:".format(key, times_called))
+#     try:
+#         times_called = int(times_called.decode("utf-8"))
+#     except Exception:
+#         times_called = 0
+#     # may have failed some text cases
+#     # print(f"{key} was called {times_called} times:")
+#     print("{} was called {} times:".format(key, times_called))
 
-    inputs = r.lrange("{}:inputs".format(key), 0, -1)
-    outputs = r.lrange("{}:outputs".format(key), 0, -1)
+#     inputs = r.lrange("{}:inputs".format(key), 0, -1)
+#     outputs = r.lrange("{}:outputs".format(key), 0, -1)
 
-    # for i in range(len(inputs)):
-    #     input_ = inputs[i].decode("utf-8")
-    #     output = outputs[i].decode("utf-8")
-    #     print(f"{key}(*{input_}) -> {output}")
+#     # for i in range(len(inputs)):
+#     #     input_ = inputs[i].decode("utf-8")
+#     #     output = outputs[i].decode("utf-8")
+#     #     print(f"{key}(*{input_}) -> {output}")
 
-    # for i in inputs:
-    #     pprint(i.decode("utf-8"))
-    # for i in outputs:
-    #     pprint(i.decode("utf-8"))
+#     # for i in inputs:
+#     #     pprint(i.decode("utf-8"))
+#     # for i in outputs:
+#     #     pprint(i.decode("utf-8"))
 
-# Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
+# # Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
 
-    for input_, output in zip(inputs, outputs):
-        try:
-            input_ = input_.decode("utf-8")
-        except Exception:
-            input_ = ""
+#     for input_, output in zip(inputs, outputs):
+#         try:
+#             input_ = input_.decode("utf-8")
+#         except Exception:
+#             input_ = ""
 
-        try:
-            output = output.decode("utf-8")
-        except Exception:
-            output = ""
+#         try:
+#             output = output.decode("utf-8")
+#         except Exception:
+#             output = ""
 
-    print("{}(*{}) -> {}".format(key, input_, output))
+#     print("{}(*{}) -> {}".format(key, input_, output))
 
 
 class Cache:
