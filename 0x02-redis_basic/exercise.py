@@ -57,19 +57,20 @@ def replay(func: Callable) -> None:
     times_called = r.get(str(key))
 
     try:
-        times_called = int(times_called)   # try .decode("utf-8")
+        times_called = int(times_called.decode("utf-8"))
     except Exception:
         times_called = 0
+    # may have failed some text cases
+    # print(f"{key} was called {times_called} times:")
+    print("{} was called {} times:".format(key, times_called))
 
-    print(f"{key} was called {times_called} times:")
+    inputs = r.lrange("{}:inputs".format(key), 0, -1)
+    outputs = r.lrange("{}:outputs".format(key), 0, -1)
 
-    inputs = r.lrange(f"{key}:inputs", 0, -1)
-    outputs = r.lrange(f"{key}:outputs", 0, -1)
-
-    for i in range(len(inputs)):
-        input_ = inputs[i].decode("utf-8")
-        output = outputs[i].decode("utf-8")
-        print(f"{key}(*{input_}) -> {output}")
+    # for i in range(len(inputs)):
+    #     input_ = inputs[i].decode("utf-8")
+    #     output = outputs[i].decode("utf-8")
+    #     print(f"{key}(*{input_}) -> {output}")
 
     # for i in inputs:
     #     pprint(i.decode("utf-8"))
@@ -77,6 +78,19 @@ def replay(func: Callable) -> None:
     #     pprint(i.decode("utf-8"))
 
 # Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
+
+    for input_, output in zip(inputs, outputs):
+        try:
+            input_ = input_.decode("utf-8")
+        except Exception:
+            input_ = ""
+
+        try:
+            output = output.decode("utf-8")
+        except Exception:
+            output = ""
+
+    print("{}(*{}) -> {}".format(key, input_, output))
 
 
 class Cache:
