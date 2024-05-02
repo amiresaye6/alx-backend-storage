@@ -29,8 +29,8 @@ class Cache:
         """
         initial constructor for Cashe class
         """
-        self._redis: Redis = redis.Redis()
-        self._redis.flushall()
+        self._redis = redis.Redis()
+        self._redis.flushdb()
 
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
