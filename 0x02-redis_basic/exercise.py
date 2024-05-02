@@ -31,6 +31,18 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """to be added"""
+    key = method.__qualname__
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """to be added"""
+        return_val = method(self, *args, **kwargs)
+        self._redis.rpush(f"{key}:inputs", str(args))
+        self._redis.rpush(f"{key}:outputs", str(return_val))
+    return wrapper
+
+
 class Cache:
     """
     cashing class using redis
@@ -44,6 +56,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis and return the generated key.
