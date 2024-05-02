@@ -15,15 +15,15 @@ Type-annotate store correctly. Remember that data can be
 a str, bytes, int or float.
 """
 import redis
+import functools
 from typing import Union, Callable, Optional
-from functools import wraps
 from uuid import uuid4
 
 
-def count_calls(method: callable) -> callable:
+def count_calls(method: Callable) -> Callable:
     """to be done"""
     key = method.__qualname__
-    @wraps(method)
+    @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         """ to be added """
         self._redis.incr(key)
