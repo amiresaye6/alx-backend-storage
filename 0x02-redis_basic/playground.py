@@ -57,16 +57,19 @@ with r.pipeline() as pipe:
 pprint.pprint(r.hgetall('hat:2577126341'))
 # print(r.keys())
 """
-def fun1(fun):
-    def wrapper(*args, **kwargs):
-        print("startd")
-        fun(*args, **kwargs)
-        print("ended")
-    return wrapper
+# def fun1(fun):
+#     def wrapper(*args, **kwargs):
+#         print("startd")
+#         fun(*args, **kwargs)
+#         print("ended")
+#     return wrapper
 
 
-@fun1 # decorator to run function fun1 each time we call the next functio "f"
-def f(a):
-    print(a)
+# @fun1 # decorator to run function fun1 each time we call the next functio "f"
+# def f(a):
+#     print(a)
 
-f("hi")
+# f("hi")
+import requests
+
+resp = requests.get("https://google.com")
