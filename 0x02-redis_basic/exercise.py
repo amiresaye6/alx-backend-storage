@@ -19,10 +19,6 @@ import functools
 from typing import Union, Callable, Optional
 from uuid import uuid4
 
-from pprint import pprint
-
-import redis.retry
-
 
 def count_calls(method: Callable) -> Callable:
     """to be done"""
@@ -36,61 +32,50 @@ def count_calls(method: Callable) -> Callable:
 
 
 def call_history(method: Callable) -> Callable:
-    """to be added"""
-    key = method.__qualname__
+    """store the history of inputs and outputs"""
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        """to be added"""
-        self._redis.rpush(key + ":inputs", str(args))
-        return_val = method(self, *args, **kwargs)
-        self._redis.rpush(key + ":outputs", str(return_val))
-        return return_val
+        """wrapper for the decorated function"""
+        input = str(args)
+        self._redis.rpush(method.__qualname__ + ":inputs", input)
+        output = str(method(self, *args, **kwargs))
+        self._redis.rpush(method.__qualname__ + ":outputs", output)
+        return output
+
     return wrapper
 
 
-# def replay(func: Callable):
-#     """to be added"""
+def replay(fn: Callable):
+    """display the history of calls of a particular function"""
+    r = redis.Redis()
+    function_name = fn.__qualname__
+    value = r.get(function_name)
+    try:
+        value = int(value.decode("utf-8"))
+    except Exception:
+        value = 0
 
-#     r = redis.Redis()
-#     key = func.__qualname__
+    # print(f"{function_name} was called {value} times")
+    print("{} was called {} times:".format(function_name, value))
+    # inputs = r.lrange(f"{function_name}:inputs", 0, -1)
+    inputs = r.lrange("{}:inputs".format(function_name), 0, -1)
 
-#     times_called = r.get(key)
+    # outputs = r.lrange(f"{function_name}:outputs", 0, -1)
+    outputs = r.lrange("{}:outputs".format(function_name), 0, -1)
 
-#     try:
-#         times_called = int(times_called.decode("utf-8"))
-#     except Exception:
-#         times_called = 0
-#     # may have failed some text cases
-#     # print(f"{key} was called {times_called} times:")
-#     print("{} was called {} times:".format(key, times_called))
+    for input, output in zip(inputs, outputs):
+        try:
+            input = input.decode("utf-8")
+        except Exception:
+            input = ""
 
-#     inputs = r.lrange("{}:inputs".format(key), 0, -1)
-#     outputs = r.lrange("{}:outputs".format(key), 0, -1)
+        try:
+            output = output.decode("utf-8")
+        except Exception:
+            output = ""
 
-#     # for i in range(len(inputs)):
-#     #     input_ = inputs[i].decode("utf-8")
-#     #     output = outputs[i].decode("utf-8")
-#     #     print(f"{key}(*{input_}) -> {output}")
-
-#     # for i in inputs:
-#     #     pprint(i.decode("utf-8"))
-#     # for i in outputs:
-#     #     pprint(i.decode("utf-8"))
-
-# # Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
-
-#     for input_, output in zip(inputs, outputs):
-#         try:
-#             input_ = input_.decode("utf-8")
-#         except Exception:
-#             input_ = ""
-
-#         try:
-#             output = output.decode("utf-8")
-#         except Exception:
-#             output = ""
-
-#     print("{}(*{}) -> {}".format(key, input_, output))
+        # print(f"{function_name}(*{input}) -> {output}")
+        print("{}(*{}) -> {}".format(function_name, input, output))
 
 
 class Cache:
