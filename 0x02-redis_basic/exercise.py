@@ -48,13 +48,13 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
-def replay(func: Callable) -> None:
+def replay(func: Callable):
     """to be added"""
 
     r = redis.Redis()
     key = func.__qualname__
 
-    times_called = r.get(str(key))
+    times_called = r.get(key)
 
     try:
         times_called = int(times_called.decode("utf-8"))
