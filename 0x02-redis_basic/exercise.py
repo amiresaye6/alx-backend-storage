@@ -19,6 +19,10 @@ import functools
 from typing import Union, Callable, Optional
 from uuid import uuid4
 
+from pprint import pprint
+
+import redis.retry
+
 
 def count_calls(method: Callable) -> Callable:
     """to be done"""
@@ -42,6 +46,37 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(f"{key}:outputs", str(return_val))
         return return_val
     return wrapper
+
+
+def replay(func: Callable) -> None:
+    """to be added"""
+
+    r = redis.Redis()
+    key = func.__qualname__
+
+    times_called = r.get(str(key))
+
+    try:
+        times_called = int(times_called)   # try .decode("utf-8")
+    except Exception:
+        times_called = 0
+
+    print(f"{key} was called {times_called} times:")
+
+    inputs = r.lrange(f"{key}:inputs", 0, -1)
+    outputs = r.lrange(f"{key}:outputs", 0, -1)
+
+    for i in range(len(inputs)):
+        input_ = inputs[i].decode("utf-8")
+        output = outputs[i].decode("utf-8")
+        print(f"{key}(*{input_}) -> {output}")
+
+    # for i in inputs:
+    #     pprint(i.decode("utf-8"))
+    # for i in outputs:
+    #     pprint(i.decode("utf-8"))
+
+# Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
 
 
 class Cache:
