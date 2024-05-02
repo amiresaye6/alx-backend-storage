@@ -41,9 +41,9 @@ def call_history(method: Callable) -> Callable:
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         """to be added"""
+        self._redis.rpush(key + ":inputs", str(args))
         return_val = method(self, *args, **kwargs)
-        self._redis.rpush(f"{key}:inputs", str(args))
-        self._redis.rpush(f"{key}:outputs", str(return_val))
+        self._redis.rpush(key + ":outputs", str(return_val))
         return return_val
     return wrapper
 
